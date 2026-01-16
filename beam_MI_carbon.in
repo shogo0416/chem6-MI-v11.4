@@ -3,15 +3,15 @@
 #/process/dna/e-SolvationSubType Ritchie1994
 #/process/dna/e-SolvationSubType Terrisol1990
 
+# enable/disable multiple ionisation processes
+/process/dna/UseDNAMultipleIonisation true
+
 # use Step-by-Step (SBS), independent reaction time (IRT)
 # or synchronized IRT (IRT_syn),
 # SBS ( is only for TDC, set 0 )
 /process/chem/TimeStepModel IRT
 #/process/chem/TimeStepModel SBS
 #/process/chem/TimeStepModel IRT_syn
-
-# enable multiple ionisation processes
-/physlist/multiple_ionisation true
 
 /run/initialize
 
@@ -43,7 +43,7 @@
 /scheduler/verbose 0
 /scheduler/endTime 1 microsecond
 
-/run/printProgress 50
+/run/printProgress 100
 
 /primaryKiller/eLossMin 10.0 keV # primary is killed if deposited E is greater than this value
 /primaryKiller/eLossMax 10.1 keV # event is aborted if deposited E is greated than this value
