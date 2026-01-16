@@ -110,6 +110,9 @@
 #include "G4DNADoubleIonisation.hh"
 #include "G4DNATripleIonisation.hh"
 #include "G4DNAQuadrupleIonisation.hh"
+#include "G4DNADoubleIonisationModel.hh"
+#include "G4DNATripleIonisationModel.hh"
+#include "G4DNAQuadrupleIonisationModel.hh"
 
 static const G4double lowEnergyRPWBA = 100*CLHEP::MeV;
 static const G4double lowEnergyMSC = 1*CLHEP::MeV;
@@ -512,13 +515,16 @@ G4EmDNABuilder::ConstructDNAProtonPhysics(const G4double e1DNA,
   // NOTE(SO): set multiple ionisation processes
   if (param->DNAMultipleIonisation()) {
     // *** Double Ionisation ***
-    FindOrBuildDoubleIonisation(part, "proton_G4DNADoubleIonisation");
+    FindOrBuildDoubleIonisation(
+      part, "proton_G4DNADoubleIonisation", reg);
 
     // *** Triple Ionisation ***
-    FindOrBuildTripleIonisation(part, "proton_G4DNATripleIonisation");
+    FindOrBuildTripleIonisation(
+      part, "proton_G4DNATripleIonisation", reg);
 
     // *** Quadruple Ionisation ***
-    FindOrBuildQuadrupleIonisation(part, "proton_G4DNAQuadrupleIonisation");
+    FindOrBuildQuadrupleIonisation(
+      part, "proton_G4DNAQuadrupleIonisation", reg);
   }
 
   // *** Charge decrease ***
@@ -553,13 +559,16 @@ G4EmDNABuilder::ConstructDNAIonPhysics(const G4double emaxIonDNA,
   // NOTE(SO): set multiple ionisation processes
   if (G4EmParameters::Instance()->DNAMultipleIonisation()) {
     // *** Double Ionisation ***
-    FindOrBuildDoubleIonisation(part, "GenericIon_G4DNADoubleIonisation");
+    FindOrBuildDoubleIonisation(
+      part, "GenericIon_G4DNADoubleIonisation", reg);
 
     // *** Triple Ionisation ***
-    FindOrBuildTripleIonisation(part, "GenericIon_G4DNATripleIonisation");
+    FindOrBuildTripleIonisation(
+      part, "GenericIon_G4DNATripleIonisation", reg);
 
     // *** Quadruple Ionisation ***
-    FindOrBuildQuadrupleIonisation(part, "GenericIon_G4DNAQuadrupleIonisation");
+    FindOrBuildQuadrupleIonisation(
+      part, "GenericIon_G4DNAQuadrupleIonisation", reg);
   }
 
   // *** NIEL ***
@@ -618,13 +627,16 @@ G4EmDNABuilder::ConstructDNALightIonPhysics(G4ParticleDefinition* part,
   // NOTE(SO): set multiple ionisation processes
   if (G4EmParameters::Instance()->DNAMultipleIonisation()) {
     // *** Double Ionisation ***
-    FindOrBuildDoubleIonisation(part, name + "_G4DNADoubleIonisation");
+    FindOrBuildDoubleIonisation(
+      part, name + "_G4DNADoubleIonisation", reg);
 
     // *** Triple Ionisation ***
-    FindOrBuildTripleIonisation(part, name + "_G4DNATripleIonisation");
+    FindOrBuildTripleIonisation(
+      part, name + "_G4DNATripleIonisation", reg);
 
     // *** Quadruple Ionisation ***
-    FindOrBuildQuadrupleIonisation(part, name + "_G4DNAQuadrupleIonisation");
+    FindOrBuildQuadrupleIonisation(
+      part, name + "_G4DNAQuadrupleIonisation", reg);
   }
 
   // *** Charge increase ***
@@ -822,38 +834,56 @@ void G4EmDNABuilder::FindOrBuildNuclearStopping(G4ParticleDefinition* part,
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 // NOTE(SO): double ionisation process
 void G4EmDNABuilder::FindOrBuildDoubleIonisation(
-  G4ParticleDefinition* part, const G4String& name)
+  G4ParticleDefinition* part, const G4String& name, const G4Region* reg)
 {
-  if (name != "proton" || name != "alpha" || name != "GenericIon") { return; }
+  auto kind = part->GetParticleName();
+  if (kind != "proton" && kind != "alpha" && kind != "GenericIon") { return; }
   auto p = G4PhysListUtil::FindProcess(part, fLowEnergyDoubleIonisation);
   G4DNADoubleIonisation* ptr = dynamic_cast<G4DNADoubleIonisation*>(p);
-  if (!ptr) { ptr = new G4DNADoubleIonisation(name); }
-  auto ph = G4PhysicsListHelper::GetPhysicsListHelper();
-  ph->RegisterProcess(ptr, part);
+  if (!ptr) {
+    ptr = new G4DNADoubleIonisation(name);
+    G4PhysicsListHelper::GetPhysicsListHelper()->RegisterProcess(ptr, part);
+    ptr->SetEmModel(new G4DummyModel());
+  }
+  auto mod = new G4DNADoubleIonisationModel();
+  mod->SelectStationary(G4EmParameters::Instance()->DNAStationary());
+  ptr->AddEmModel(-1, mod, reg);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 // NOTE(SO): triple ionisation process
 void G4EmDNABuilder::FindOrBuildTripleIonisation(
-  G4ParticleDefinition* part, const G4String& name)
+  G4ParticleDefinition* part, const G4String& name, const G4Region* reg)
 {
-  if (name != "proton" || name != "alpha" || name != "GenericIon") { return; }
+  auto kind = part->GetParticleName();
+  if (kind != "proton" && kind != "alpha" && kind != "GenericIon") { return; }
   auto p = G4PhysListUtil::FindProcess(part, fLowEnergyTripleIonisation);
   G4DNATripleIonisation* ptr = dynamic_cast<G4DNATripleIonisation*>(p);
-  if (!ptr) { ptr = new G4DNATripleIonisation(name); }
-  auto ph = G4PhysicsListHelper::GetPhysicsListHelper();
-  ph->RegisterProcess(ptr, part);
+  if (!ptr) {
+    ptr = new G4DNATripleIonisation(name);
+    G4PhysicsListHelper::GetPhysicsListHelper()->RegisterProcess(ptr, part);
+    ptr->SetEmModel(new G4DummyModel());
+  }
+  auto mod = new G4DNATripleIonisationModel();
+  mod->SelectStationary(G4EmParameters::Instance()->DNAStationary());
+  ptr->AddEmModel(-1, mod, reg);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 // NOTE(SO): quadruple ionisation process
 void G4EmDNABuilder::FindOrBuildQuadrupleIonisation(
-  G4ParticleDefinition* part, const G4String& name)
+  G4ParticleDefinition* part, const G4String& name, const G4Region* reg)
 {
-  if (name != "proton" || name != "alpha" || name != "GenericIon") { return; }
+  auto kind = part->GetParticleName();
+  if (kind != "proton" && kind != "alpha" && kind != "GenericIon") { return; }
   auto p = G4PhysListUtil::FindProcess(part, fLowEnergyQuadrupleIonisation);
   G4DNAQuadrupleIonisation* ptr = dynamic_cast<G4DNAQuadrupleIonisation*>(p);
-  if (!ptr) { ptr = new G4DNAQuadrupleIonisation(name); }
-  auto ph = G4PhysicsListHelper::GetPhysicsListHelper();
-  ph->RegisterProcess(ptr, part);
+  if (!ptr) {
+    ptr = new G4DNAQuadrupleIonisation(name);
+    G4PhysicsListHelper::GetPhysicsListHelper()->RegisterProcess(ptr, part);
+    ptr->SetEmModel(new G4DummyModel());
+  }
+  auto mod = new G4DNAQuadrupleIonisationModel();
+  mod->SelectStationary(G4EmParameters::Instance()->DNAStationary());
+  ptr->AddEmModel(-1, mod, reg);
 }

@@ -125,15 +125,15 @@ public:
   // NOTE(SO): multiple ionisation processes
   static void
   FindOrBuildDoubleIonisation(
-    G4ParticleDefinition* part, const G4String& name);
+    G4ParticleDefinition* part, const G4String& name, const G4Region* reg);
 
   static void
   FindOrBuildTripleIonisation(
-    G4ParticleDefinition* part, const G4String& name);
+    G4ParticleDefinition* part, const G4String& name, const G4Region* reg);
 
   static void
   FindOrBuildQuadrupleIonisation(
-    G4ParticleDefinition* part, const G4String& name);
+    G4ParticleDefinition* part, const G4String& name, const G4Region* reg);
 
 private:
 
