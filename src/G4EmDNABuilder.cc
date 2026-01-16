@@ -110,7 +110,6 @@
 #include "G4DNADoubleIonisation.hh"
 #include "G4DNATripleIonisation.hh"
 #include "G4DNAQuadrupleIonisation.hh"
-G4bool G4EmDNABuilder::fMIoni = false;
 
 static const G4double lowEnergyRPWBA = 100*CLHEP::MeV;
 static const G4double lowEnergyMSC = 1*CLHEP::MeV;
@@ -510,7 +509,8 @@ G4EmDNABuilder::ConstructDNAProtonPhysics(const G4double e1DNA,
     theDNAIoni->AddEmModel(-3, modJ, reg);
   }
 
-  if (fMIoni) {
+  // NOTE(SO): set multiple ionisation processes
+  if (param->DNAMultipleIonisation()) {
     // *** Double Ionisation ***
     FindOrBuildDoubleIonisation(part, "proton_G4DNADoubleIonisation");
 
@@ -550,7 +550,8 @@ G4EmDNABuilder::ConstructDNAIonPhysics(const G4double emaxIonDNA,
   mod->SetHighEnergyLimit(emaxIonDNA);
   theDNAIoni->AddEmModel(-1, mod, reg);
 
-  if (fMIoni) {
+  // NOTE(SO): set multiple ionisation processes
+  if (G4EmParameters::Instance()->DNAMultipleIonisation()) {
     // *** Double Ionisation ***
     FindOrBuildDoubleIonisation(part, "GenericIon_G4DNADoubleIonisation");
 
@@ -614,7 +615,8 @@ G4EmDNABuilder::ConstructDNALightIonPhysics(G4ParticleDefinition* part,
   modRI->SetHighEnergyLimit(elim2);
   theDNAIoni->AddEmModel(-2, modRI, reg);
 
-  if (fMIoni) {
+  // NOTE(SO): set multiple ionisation processes
+  if (G4EmParameters::Instance()->DNAMultipleIonisation()) {
     // *** Double Ionisation ***
     FindOrBuildDoubleIonisation(part, name + "_G4DNADoubleIonisation");
 
@@ -822,14 +824,12 @@ void G4EmDNABuilder::FindOrBuildNuclearStopping(G4ParticleDefinition* part,
 void G4EmDNABuilder::FindOrBuildDoubleIonisation(
   G4ParticleDefinition* part, const G4String& name)
 {
+  if (name != "proton" || name != "alpha" || name != "GenericIon") { return; }
   auto p = G4PhysListUtil::FindProcess(part, fLowEnergyDoubleIonisation);
   G4DNADoubleIonisation* ptr = dynamic_cast<G4DNADoubleIonisation*>(p);
   if (!ptr) { ptr = new G4DNADoubleIonisation(name); }
   auto ph = G4PhysicsListHelper::GetPhysicsListHelper();
-  if (!ph->RegisterProcess(ptr, part)) {
-    G4cout << "[G4EmDNABuilder::WARNNING] " << name
-           << " is not supported.." << G4endl;
-  }
+  ph->RegisterProcess(ptr, part);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -837,14 +837,12 @@ void G4EmDNABuilder::FindOrBuildDoubleIonisation(
 void G4EmDNABuilder::FindOrBuildTripleIonisation(
   G4ParticleDefinition* part, const G4String& name)
 {
+  if (name != "proton" || name != "alpha" || name != "GenericIon") { return; }
   auto p = G4PhysListUtil::FindProcess(part, fLowEnergyTripleIonisation);
   G4DNATripleIonisation* ptr = dynamic_cast<G4DNATripleIonisation*>(p);
   if (!ptr) { ptr = new G4DNATripleIonisation(name); }
   auto ph = G4PhysicsListHelper::GetPhysicsListHelper();
-  if (!ph->RegisterProcess(ptr, part)) {
-    G4cout << "[G4EmDNABuilder::WARNNING] " << name
-           << " is not supported.." << G4endl;
-  }
+  ph->RegisterProcess(ptr, part);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -852,12 +850,10 @@ void G4EmDNABuilder::FindOrBuildTripleIonisation(
 void G4EmDNABuilder::FindOrBuildQuadrupleIonisation(
   G4ParticleDefinition* part, const G4String& name)
 {
+  if (name != "proton" || name != "alpha" || name != "GenericIon") { return; }
   auto p = G4PhysListUtil::FindProcess(part, fLowEnergyQuadrupleIonisation);
   G4DNAQuadrupleIonisation* ptr = dynamic_cast<G4DNAQuadrupleIonisation*>(p);
   if (!ptr) { ptr = new G4DNAQuadrupleIonisation(name); }
   auto ph = G4PhysicsListHelper::GetPhysicsListHelper();
-  if (!ph->RegisterProcess(ptr, part)) {
-    G4cout << "[G4EmDNABuilder::WARNNING] " << name
-           << " is not supported.." << G4endl;
-  }
+  ph->RegisterProcess(ptr, part);
 }

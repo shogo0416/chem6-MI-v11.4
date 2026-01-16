@@ -46,11 +46,6 @@
 #include "G4DNAChargeIncrease.hh"
 #include "G4LowECapture.hh"
 
-// NOTE(SO): multiple ionisation processes
-#include "G4DNADoubleIonisation.hh"
-#include "G4DNATripleIonisation.hh"
-#include "G4DNAQuadrupleIonisation.hh"
-
 enum G4EmDNAMscModelType
 {
   dnaUrban = 0,
@@ -149,8 +144,6 @@ private:
                   const G4EmDNAMscModelType mscType,
                   const G4bool isIon);
 
-  // NOTE(SO): disable/enable multiple ionisation processes
-  static G4bool fMIoni;
 };
 
 #endif
