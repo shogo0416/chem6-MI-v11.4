@@ -3,7 +3,7 @@
 #/process/dna/e-SolvationSubType Ritchie1994
 #/process/dna/e-SolvationSubType Terrisol1990
 
-# enable/disable multiple ionisation processes
+# use multiple ionisation processes {true|false}
 /process/dna/UseDNAMultipleIonisation true
 
 # use Step-by-Step (SBS), independent reaction time (IRT)
