@@ -54,9 +54,6 @@ PhysicsListMessenger::PhysicsListMessenger(PhysicsList *pPhys)
   fListCmd->AvailableForStates(G4State_PreInit);
   fListCmd->SetToBeBroadcasted(false);
 
-  fMIoniCmd = new G4UIcmdWithABool("/physlist/multiple_ionisation", this);
-  fMIoniCmd->SetGuidance("Set multiple ionization processes");
-  fMIoniCmd->SetDefaultValue(false);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -64,9 +61,6 @@ PhysicsListMessenger::PhysicsListMessenger(PhysicsList *pPhys)
 void PhysicsListMessenger::SetNewValue(G4UIcommand *command, const G4String newValue) {
   if (command == fListCmd.get()) {
     fPhysicsList->RegisterConstructor(newValue);
-  }
-  if (command == fMIoniCmd) {
-    G4EmDNABuilder::SetMultipleIonisation(fMIoniCmd->GetNewBoolValue(newValue));
   }
 }
 

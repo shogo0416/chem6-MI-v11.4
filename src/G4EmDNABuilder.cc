@@ -119,16 +119,6 @@ static const G4double highEnergyMillerGrean = 0.5*CLHEP::MeV;
 static const G4double highEnergyChargeExchange = 100*CLHEP::MeV;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-// NOTE(SO): disable/enable multiple ionisation processes
-void G4EmDNABuilder::SetMultipleIonisation(G4bool in)
-{
-  fMIoni = in;
-  G4cout << "[G4EmDNABuilder::MESSAGE] Multiple Ionisation is ";
-  if (fMIoni) { G4cout << "enabled." << G4endl; }
-  else { G4cout << "disabled." << G4endl; }
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void G4EmDNABuilder::ConstructDNAParticles()
 {

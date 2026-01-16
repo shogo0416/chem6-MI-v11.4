@@ -140,8 +140,6 @@ public:
   FindOrBuildQuadrupleIonisation(
     G4ParticleDefinition* part, const G4String& name);
 
-  static void SetMultipleIonisation(G4bool in);
-
 private:
 
   static void StandardHadronPhysics(G4ParticleDefinition*,
