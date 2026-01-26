@@ -75,7 +75,11 @@ public:
    */
   void SetNewValue(G4UIcommand *command, G4String newValue) override;
 
-  void Initialize(G4HCofThisEvent *) override {fELoss = 0.;};
+  // NOTE(SO): modified PrimaryKiller::Initialize()
+  void Initialize(G4HCofThisEvent *) override {
+    if (fELossRange_Min < fELossRange_Max) { fKillPrimary = true; }
+    fELoss = 0.;
+  };
 
   void EndOfEvent(G4HCofThisEvent *) override {};
 
@@ -84,6 +88,7 @@ protected:
   G4bool ProcessHits(G4Step *, G4TouchableHistory *) override;
 
 private:
+  G4bool fKillPrimary = false; // NOTE(SO): add fKillPrimary
   G4double fELoss = 0; // cumulated energy loss by the primary
   G4double fELossRange_Min = DBL_MAX; // fELoss from which the primary is killed
   G4double fELossRange_Max = DBL_MAX; // fELoss from which the event is aborted
